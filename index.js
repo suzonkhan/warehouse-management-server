@@ -40,13 +40,9 @@ async function run(){
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             
-            // const updateDoc = {
-            //   $set: udpatedProduct,
-            // };
             const updateDoc = {
               $set: {
                  stock: udpatedProduct.stock,
-                 
               },
             };
             console.log(updateDoc);
