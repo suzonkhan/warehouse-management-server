@@ -19,8 +19,24 @@ async function run(){
         await client.connect();
         const productCollection = client.db("warehouse").collection("products");
 
+        app.post('/product', async(req, res)=>{ 
+            const newProduct = req.body; 
+            const result = await productCollection.insertOne(newProduct);
+            console.log(`A document was inserted with the _id: ${result.insertedId}`);
+            res.send(result); 
+        })
+
         app.get('/products', async (req, res)=>{
             const query = { }; 
+            const cursor = productCollection.find(query);
+            const products =   await cursor.toArray();
+            res.send(products);
+        })
+
+        app.get('/products/:email', async (req, res)=>{
+            const email = req.params.email;
+            const query = {userEmail: email }; 
+            console.log(query)
             const cursor = productCollection.find(query);
             const products =   await cursor.toArray();
             res.send(products);
@@ -49,6 +65,13 @@ async function run(){
             const result = await productCollection.updateOne(filter, updateDoc, options );
             res.send(result);
 
+        })
+
+        app.delete('/product/:id', async (req, res)=>{
+            const id = req.params.id; 
+            const query = { _id: ObjectId(id) };
+            const result = await productCollection.deleteOne(query);
+            res.send(result);
         })
 
 
