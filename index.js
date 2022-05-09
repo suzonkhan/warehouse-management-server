@@ -12,7 +12,7 @@ app.use(express.json());
 
 function verifyJWT(req, res, next) {
     const authHeader = req.headers.authorization;
-    
+    // console.log(authHeader);
     if (!authHeader) {
         return res.status(401).send({ message: 'unauthorized access' });
     }
@@ -22,7 +22,7 @@ function verifyJWT(req, res, next) {
         if (err) {
             return res.status(403).send({ message: 'Forbidden access' });
         }
-        // console.log('decoded', decoded);
+        console.log('decoded', decoded);
         req.decoded = decoded;
         next();
     })
@@ -41,6 +41,7 @@ async function run(){
 
         app.post('/login', async(req, res) => {
             const user = req.body;
+            console.log(user);
             const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
                 expiresIn: '1d'
             })
@@ -63,12 +64,19 @@ async function run(){
         })
 
         // View products collection (My Products) 
-        app.get('/product', async (req, res)=>{ 
-            const email = req.query.email; 
-            const query = {userEmail: email }; 
-            const cursor = productCollection.find(query);
-            const products = await cursor.toArray();
-            res.send(products);
+        app.get('/product',verifyJWT, async (req, res)=>{ 
+            const decodedEmail = req.decoded.email; 
+            const email = req.query.email;  
+            if (email === decodedEmail) {
+                const query = {userEmail: email}; 
+                const cursor = productCollection.find(query);
+                const products = await cursor.toArray();
+                res.send(products);
+            }
+            else{
+                res.status(403).send({message: 'forbidden access'})
+            }
+           
         })
 
         //Load Single Product
