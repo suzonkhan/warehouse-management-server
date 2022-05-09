@@ -63,7 +63,7 @@ async function run(){
         })
 
         // View products collection (My Products) 
-        app.get('/products', async (req, res)=>{ 
+        app.get('/product', async (req, res)=>{ 
             const email = req.query.email; 
             const query = {userEmail: email }; 
             const cursor = productCollection.find(query);
