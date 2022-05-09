@@ -10,23 +10,23 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-function verifyJWT(req, res, next) {
-    const authHeader = req.headers.authorization;
-    // console.log(authHeader);
-    if (!authHeader) {
-        return res.status(401).send({ message: 'unauthorized access' });
-    }
-    const token = authHeader.split(' ')[1];
-    // console.log(token);
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(403).send({ message: 'Forbidden access' });
-        }
-        console.log('decoded', decoded);
-        req.decoded = decoded;
-        next();
-    })
-}
+// function verifyJWT(req, res, next) {
+//     const authHeader = req.headers.authorization;
+   
+//     if (!authHeader) {
+//         return res.status(401).send({ message: 'unauthorized access' });
+//     }
+//     const token = authHeader.split(' ')[1];
+  
+//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+//         if (err) {
+//             return res.status(403).send({ message: 'Forbidden access' });
+//         }
+//         console.log('decoded', decoded);
+//         req.decoded = decoded;
+//         next();
+//     })
+// }
 
 
 
@@ -64,18 +64,19 @@ async function run(){
         })
 
         // View products collection (My Products) 
-        app.get('/product',verifyJWT, async (req, res)=>{ 
-            const decodedEmail = req.decoded.email; 
-            const email = req.query.email;  
-            if (email === decodedEmail) {
+        app.get('/product', async (req, res)=>{ 
+           
+                const email = req.query.email;  
                 const query = {userEmail: email}; 
                 const cursor = productCollection.find(query);
                 const products = await cursor.toArray();
                 res.send(products);
-            }
-            else{
-                res.status(403).send({message: 'forbidden access'})
-            }
+            // if (email === decodedEmail) {
+       
+            // }
+            // else{
+            //     res.status(403).send({message: 'forbidden access'})
+            // }
            
         })
 
